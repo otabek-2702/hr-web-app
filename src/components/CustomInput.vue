@@ -7,12 +7,69 @@ const emit = defineEmits(['update:modelValue']);
 
 const alert = ref(false);
 
+// phoneNumber
+const inpuRef = ref('');
+
+const formatNumber = (value) => {
+  const parts = [];
+  if (value.length > 0) parts.push(value.slice(0, 2)); // First 2 digits
+  if (value.length > 2) parts.push(value.slice(2, 5)); // Next 3 digits
+  if (value.length > 5) parts.push(value.slice(5, 7)); // Next 2 digits
+  if (value.length > 7) parts.push(value.slice(7, 9)); // Last 2 digits
+  return parts.join(' ');
+};
+
+const onPhoneNumberInput = (event) => {
+  const value = event.target.value;
+  const numericValue = value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+  if (numericValue.length > 9) {
+    const numericValueSliced = numericValue.slice(0, 9);
+
+    // saving to local ref
+    event.target.value = numericValueSliced;
+    inpuRef.value = formatNumber(numericValueSliced);
+  } else {
+    // saving to local ref
+    inpuRef.value = formatNumber(numericValue);
+  }
+  // saving to the reactive in the app
+  emit('update:modelValue', `+998${inpuRef.value.replace(/\s+/g, '')}`);
+};
+// phone number end
+
+// calendarData
+const formatCalendarData = (value) => {
+  const parts = [];
+  if (value.length > 0) parts.push(value.slice(0, 2)); // First 2 
+  if (value.length > 2) parts.push(value.slice(2, 4)); // Next  2
+  if (value.length > 4) parts.push(value.slice(4, 9)); // Next 4 
+  return parts.join('.');
+};
+
+const onformatCalendarInput = (event) => {
+  const value = event.target.value;
+  const numericValue = value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+  if (numericValue.length > 9) {
+    const numericValueSliced = numericValue.slice(0, 9);
+
+    // saving to local ref
+    event.target.value = numericValueSliced;
+    inpuRef.value = formatCalendarData(numericValueSliced);
+  } else {
+    // saving to local ref
+    inpuRef.value = formatCalendarData(numericValue);
+  }
+  // saving to the reactive in the app
+  emit('update:modelValue', inpuRef.value.replace(/\./g, ''));
+};
+
+
 // rules
 const field_required = 'Поле обязательно для заполнения';
-const phone_number_max = 'This field exceeds maximum allowed characters'
+const phone_number_valid = 'Пожалуйста, введите номер телефона в корректном формате.';
 const rules = {
   required: (v) => !!v || field_required,
-  phoneNumberMax: (v) => (!!v && v.toString().length > 9) || phone_number_max,
+  phoneNumberMax: (v) => !(v.length < 12) || phone_number_valid,
 };
 
 const checkLabelLength = props.variables.label.length > 36; // "help" key in the if for adding another text from app object
@@ -25,8 +82,12 @@ const checkIsRadio = props.variables.type == 'radio';
 <template>
   <!-- SNACKBAR -->
   <v-snackbar :timeout="3000" color="surface" multi-line v-model="alert">
-    <h3 class="font-weight-light text-shades-white">
-      {{ `${variables.label} \n${variables.example ?? ''}` }}
+    <h3 class="font-weight-regular text-shades-white ">
+      {{ `${variables.label}` }}
+    </h3>
+      <h3 class="font-weight-regular text-shades-white mt-2" v-if="variables.example">
+        Пример:
+      <span class="font-weight-black">{{variables.example}}</span>
     </h3>
   </v-snackbar>
 
@@ -50,14 +111,14 @@ const checkIsRadio = props.variables.type == 'radio';
   <!-- NUMBER -->
   <v-text-field
     :label="variables.label"
-    :rules="[rules.required, phoneNumberMax]"
-    :model-value="modelValue"
+    :rules="[rules.required, rules.phoneNumberMax]"
     :hint="variables.example"
     persistent-hint
     single-line
-    type="number"
-    :max="9"
-    @update:model-value="$emit('update:modelValue', $event)"
+    type="text"
+    maxlength="13"
+    @input="onPhoneNumberInput"
+    v-model="inpuRef"
     class="mb-2"
     variant="outlined"
     v-if="checkIsNumber"
@@ -71,16 +132,24 @@ const checkIsRadio = props.variables.type == 'radio';
   </v-text-field>
 
   <!-- CALENDAR -->
-  <v-date-input
-    clearable
+  <v-text-field
     :label="variables.label"
+    :rules="[rules.required]"
+    :hint="variables.example"
+    persistent-hint
+    single-line
+    type="text"
+    maxlength="10"
+    @input="onformatCalendarInput"
+    v-model="inpuRef"
+    class="mb-2"
     variant="outlined"
-    :model-value="modelValue"
-    @update:model-value="$emit('update:modelValue', $event)"
-    prepend-icon=""
     v-if="checkIsCalendar"
   >
-  </v-date-input>
+    <template v-slot:append-inner v-if="checkLabelLength || variables.help">
+      <v-icon :icon="mdiInformation" @click="() => (alert = !alert)"></v-icon>
+    </template>
+  </v-text-field>
 
   <!-- RADIO -->
   <v-radio-group

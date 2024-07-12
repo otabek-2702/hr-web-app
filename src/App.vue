@@ -9,10 +9,13 @@ const inputVariables = {
   },
   phone_number: {
     label: 'Номер телефона',
+    example: '77 737 27 02',
     type: 'number',
   },
   birthday: {
-    label: 'Дата вашего рождения',
+    label: 'Дата вашего рождения дд.мм.гггг',
+    help: true,
+    example: '27.02.2008',
     type: 'calendar',
   },
   place_of_residence: {
@@ -78,7 +81,7 @@ const rules = {
 
 const formData = reactive({
   full_name: '',
-  phone_number: '+998',
+  phone_number: '',
   birthday: '',
   place_of_residence: '',
   gender: '',
@@ -94,7 +97,6 @@ const formData = reactive({
   agree_with_data: false,
 });
 
-watch(formData.value, (newVal) => console.log(newVal))
 
 const inputNames = Object.keys(formData);
 </script>
