@@ -1,15 +1,15 @@
 <script setup>
 import { mdiInformation } from '@mdi/js';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
 const props = defineProps(['variables', 'modelValue']);
 const emit = defineEmits(['update:modelValue']);
 
 const alert = ref(false);
+const inputRef = ref('');
+const selectedCheckboxes = ref(props.modelValue);
 
 // phoneNumber
-const inpuRef = ref('');
-
 const formatNumber = (value) => {
   const parts = [];
   if (value.length > 0) parts.push(value.slice(0, 2)); // First 2 digits
@@ -27,22 +27,22 @@ const onPhoneNumberInput = (event) => {
 
     // saving to local ref
     event.target.value = numericValueSliced;
-    inpuRef.value = formatNumber(numericValueSliced);
+    inputRef.value = formatNumber(numericValueSliced);
   } else {
     // saving to local ref
-    inpuRef.value = formatNumber(numericValue);
+    inputRef.value = formatNumber(numericValue);
   }
   // saving to the reactive in the app
-  emit('update:modelValue', `+998${inpuRef.value.replace(/\s+/g, '')}`);
+  emit('update:modelValue', `+998${inputRef.value.replace(/\s+/g, '')}`);
 };
 // phone number end
 
 // calendarData
 const formatCalendarData = (value) => {
   const parts = [];
-  if (value.length > 0) parts.push(value.slice(0, 2)); // First 2 
+  if (value.length > 0) parts.push(value.slice(0, 2)); // First 2
   if (value.length > 2) parts.push(value.slice(2, 4)); // Next  2
-  if (value.length > 4) parts.push(value.slice(4, 9)); // Next 4 
+  if (value.length > 4) parts.push(value.slice(4, 9)); // Next 4
   return parts.join('.');
 };
 
@@ -54,15 +54,26 @@ const onformatCalendarInput = (event) => {
 
     // saving to local ref
     event.target.value = numericValueSliced;
-    inpuRef.value = formatCalendarData(numericValueSliced);
+    inputRef.value = formatCalendarData(numericValueSliced);
   } else {
     // saving to local ref
-    inpuRef.value = formatCalendarData(numericValue);
+    inputRef.value = formatCalendarData(numericValue);
   }
   // saving to the reactive in the app
-  emit('update:modelValue', inpuRef.value.replace(/\./g, ''));
+  emit('update:modelValue', inputRef.value.replace(/\./g, ''));
 };
+// calendarData end
 
+// checkbox
+watch(selectedCheckboxes, (newValue) => {
+  if (newValue.length === 0) {
+    emit('update:modelValue', '');
+  } else if (newValue.length === 1) {
+    emit('update:modelValue', newValue[0]);
+  } else {
+    emit('update:modelValue', newValue);
+  }
+});
 
 // rules
 const field_required = 'Поле обязательно для заполнения';
@@ -72,22 +83,24 @@ const rules = {
   phoneNumberMax: (v) => !(v.length < 12) || phone_number_valid,
 };
 
-const checkLabelLength = props.variables.label.length > 36; // "help" key in the if for adding another text from app object
+const checkLabelLength = props.variables.label?.length > 36; // "help" key in the if for adding another text from app object
 const checkIsText = props.variables.type == 'text';
 const checkIsNumber = props.variables.type == 'number';
 const checkIsCalendar = props.variables.type == 'calendar';
 const checkIsRadio = props.variables.type == 'radio';
+const checkIsCheckbox = props.variables.type == 'checkbox';
 </script>
 
+<!-- hide-details="auto" -->
 <template>
   <!-- SNACKBAR -->
   <v-snackbar :timeout="3000" color="surface" multi-line v-model="alert">
-    <h3 class="font-weight-regular text-shades-white ">
+    <h3 class="font-weight-regular text-shades-white">
       {{ `${variables.label}` }}
     </h3>
-      <h3 class="font-weight-regular text-shades-white mt-2" v-if="variables.example">
-        Пример:
-      <span class="font-weight-black">{{variables.example}}</span>
+    <h3 class="font-weight-regular text-shades-white mt-2" v-if="variables.example">
+      Пример:
+      <span class="font-weight-black">{{ variables.example }}</span>
     </h3>
   </v-snackbar>
 
@@ -99,7 +112,7 @@ const checkIsRadio = props.variables.type == 'radio';
     :hint="variables.example"
     persistent-hint
     @update:model-value="$emit('update:modelValue', $event)"
-    class="mb-2"
+    class="my-4"
     variant="outlined"
     v-if="checkIsText"
   >
@@ -113,13 +126,14 @@ const checkIsRadio = props.variables.type == 'radio';
     :label="variables.label"
     :rules="[rules.required, rules.phoneNumberMax]"
     :hint="variables.example"
+    :hide-details="!variables.example"
     persistent-hint
     single-line
     type="text"
     maxlength="13"
     @input="onPhoneNumberInput"
-    v-model="inpuRef"
-    class="mb-2"
+    v-model="inputRef"
+    class="my-4"
     variant="outlined"
     v-if="checkIsNumber"
   >
@@ -141,7 +155,7 @@ const checkIsRadio = props.variables.type == 'radio';
     type="text"
     maxlength="10"
     @input="onformatCalendarInput"
-    v-model="inpuRef"
+    v-model="inputRef"
     class="mb-2"
     variant="outlined"
     v-if="checkIsCalendar"
@@ -162,6 +176,21 @@ const checkIsRadio = props.variables.type == 'radio';
   >
     <v-radio v-for="radio in variables.data" :label="radio.label" :value="radio.value"></v-radio>
   </v-radio-group>
+
+  <!-- CHECKBOX -->
+  <v-row v-if="checkIsCheckbox">
+    <v-label class="ml-8" style="white-space: normal" v-if="variables.label">{{
+      variables.label
+    }}</v-label>
+    <v-col :cols="variables.data.length >= 2 ? 6 : 12" v-for="checkbox in variables.data">
+      <v-checkbox
+        v-model="selectedCheckboxes"
+        :label="checkbox.label"
+        :value="checkbox.value"
+        hide-details
+      ></v-checkbox>
+    </v-col>
+  </v-row>
 </template>
 
 <style scoped></style>
