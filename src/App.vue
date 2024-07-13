@@ -1,8 +1,11 @@
 <script setup>
-import { reactive, watch } from 'vue';
+import { reactive,ref, watch } from 'vue';
 import CustomInput from './components/CustomInput.vue';
 
-const inputVariables = {
+const lang = ref('uz')
+
+
+const inputVariablesRussian = {
   full_name: {
     label: 'Ф.И.О',
     type: 'text',
@@ -88,13 +91,115 @@ const inputVariables = {
     type: 'checkbox',
   },
 
+  choose_lang: 'Выберите язык',
+  input_form_label: 'Заполните форму ниже для продолжения 👇',
   field_required: 'Поле обязательно для заполнения', // there is another one in customInput
   submit: 'Отправить данные',
 };
 
-const rules = {
-  required: (value) => !!value || inputLabels.field_required,
+const inputVariablesUzbek = {
+  full_name: {
+    label: 'F.I.O',
+    type: 'text',
+  },
+  phone_number: {
+    label: 'Telefon raqamingiz',
+    example: '77 737 27 02',
+    type: 'number',
+  },
+  birthday: {
+    label: 'Tug‘ilgan sanangiz (kun.oy.yil)',
+    help: true,
+    example: '27.02.2008',
+    type: 'calendar',
+  },
+  place_of_residence: {
+    label: 'Yashash joyingiz',
+    type: 'text',
+  },
+  gender: {
+    label: 'Jinsingiz',
+    type: 'radio',
+    data: [
+      { label: 'Erkak', value: 'man' },
+      { label: 'Ayol', value: 'woman' },
+    ],
+  },
+  is_student: {
+    label: 'Hozirda talabamisiz?',
+    type: 'radio',
+    data: [
+      { label: 'Ha', value: 'yes' },
+      { label: 'Yo‘q', value: 'no' },
+    ],
+  },
+  education: {
+    label: "Ta'lim? Universitet nomi, fakultet?",
+    type: 'text',
+  },
+  family_status: {
+    label: 'Oilaviy holatingiz?',
+    type: 'radio',
+    data: [
+      { label: 'Turmush qurgan (ayol)', value: 'married_female' },
+      { label: 'Turmush qurgan (erkak)', value: 'married_male' },
+      { label: 'Ajrashgan', value: 'divorced' },
+      { label: 'Beva', value: 'widow' },
+    ],
+  },
+  last_work_place: {
+    label: 'Oxirgi ish joylaringiz (oxirgi 3ta ish joyini yozing)',
+    type: 'text',
+  },
+  knowledge_of_languages: {
+    label: 'Til bilimingiz? (iltimos, kamida bitta tilni tanlang)',
+    data: [
+      { label: 'O‘zbek tili', value: 'uzbek' },
+      { label: 'Rus tili', value: 'russian' },
+      { label: 'Ingliz tili', value: 'english' },
+    ],
+    type: 'checkbox',
+  },
+  positive_skills: {
+    label: 'O‘z ijobiy ko‘nikmalaringizni yozing',
+    type: 'text',
+  },
+  worked_on_platforms: {
+    label: 'Qaysi platformalarda ishlagansiz? Iltimos, batafsil yozing',
+    example: 'exel, word, canva',
+    type: 'text',
+  },
+  worked_on_programms: {
+    label: 'Qaysi dasturlarda ishlagansiz?',
+    example: '1s, mysoliq, SAP',
+    type: 'text',
+  },
+  where_find_us: {
+    label: 'Biz haqimizda qayerdan bildingiz?',
+    type: 'text',
+  },
+  agree_with_data: {
+    data: [{ label: "Shaxsiy ma'lumotlaringizni qayta ishlashga rozilik berasizmi", value: 'yes' }],
+    type: 'checkbox',
+  },
+
+  choose_lang: 'Tilni tanlang',
+  input_form_label: 'Davom etish uchun quyidagi formalarni to‘ldiring 👇',
+  field_required: 'Maydonni to‘ldirish majburiy', // there is another one in customInput
+  submit: 'Ma’lumotlarni yuborish',
 };
+
+// LANGUAGUE
+const inputVariables = ref(lang.value === 'uz' ?  inputVariablesUzbek : inputVariablesRussian)
+
+watch(lang, (newValue) => {
+  if(newValue === 'uz') {
+    inputVariables.value = inputVariablesUzbek
+  } else {
+    inputVariables.value = inputVariablesRussian
+  }
+})
+
 
 const formData = reactive({
   full_name: '',
@@ -117,14 +222,28 @@ const formData = reactive({
 const inputNames = Object.keys(formData);
 
 const handleSubmit = () => {
-  form.value.validate()
-}
+  form.value.validate();
+};
 </script>
 
 <template>
   <v-app>
     <v-container fluid>
-      <p class="text-h4 mb-6">Заполните форму ниже для продолжения 👇</p>
+      <v-row class="pt-2 pb-5 px-4" align="center">
+        <p class="font-weight-medium" style="font-size: 18px">{{ inputVariables.choose_lang }}</p>
+        <v-spacer></v-spacer>
+        <v-select
+          :items="[
+            { title: 'O‘zbek tili ', value: 'uz' },
+            { title: 'Русский язык', value: 'ru' },
+          ]"
+          v-model="lang"
+          variant="solo"
+          max-width="180"
+          hide-details
+        ></v-select>
+      </v-row>
+      <p class="text-h4 mb-6">{{ inputVariables.input_form_label }}</p>
       <v-form ref="form" @submit.prevent="handleSubmit">
         <custom-input
           v-for="input in inputNames"

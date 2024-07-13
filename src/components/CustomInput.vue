@@ -80,6 +80,7 @@ const field_required = 'Поле обязательно для заполнен�
 const phone_number_valid = 'Пожалуйста, введите номер телефона в корректном формате.';
 const rules = {
   required: (v) => !!v || field_required,
+  checkboxRequired: (v) => !!v || field_required,
   phoneNumberMax: (v) => !(v.length < 12) || phone_number_valid,
 };
 
@@ -179,12 +180,13 @@ const checkIsCheckbox = props.variables.type == 'checkbox';
 
   <!-- CHECKBOX -->
   <v-row v-if="checkIsCheckbox">
-    <v-label class="ml-8" style="white-space: normal" v-if="variables.label">{{
+    <v-label class="ml-4" style="white-space: normal" v-if="variables.label">{{
       variables.label
     }}</v-label>
     <v-col :cols="variables.data.length >= 2 ? 6 : 12" v-for="checkbox in variables.data">
       <v-checkbox
         v-model="selectedCheckboxes"
+        :rules="[rules.required]"
         :label="checkbox.label"
         :value="checkbox.value"
         hide-details
