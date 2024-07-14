@@ -2,7 +2,7 @@
 import { mdiInformation } from '@mdi/js';
 import { ref, watch } from 'vue';
 
-const props = defineProps(['variables', 'modelValue']);
+const props = defineProps(['variables', 'modelValue', 'rulesErrorText',]);
 const emit = defineEmits(['update:modelValue']);
 
 const alert = ref(false);

@@ -1,9 +1,9 @@
 <script setup>
-import { reactive,ref, watch } from 'vue';
+import { reactive, ref, watch } from 'vue';
 import CustomInput from './components/CustomInput.vue';
 
-const lang = ref('uz')
-
+const lang = ref('uz');
+localStorage.setItem('lang', 'uz');
 
 const inputVariablesRussian = {
   full_name: {
@@ -49,8 +49,7 @@ const inputVariablesRussian = {
     label: 'Семейное положение ?',
     type: 'radio',
     data: [
-      { label: 'Замужем', value: 'married_female' },
-      { label: 'Женат', value: 'married_male' },
+      { label: 'Замужем / Женат', value: 'married' },
       { label: 'В разводе', value: 'divorced' },
       { label: 'Вдова', value: 'widow' },
     ],
@@ -93,7 +92,11 @@ const inputVariablesRussian = {
 
   choose_lang: 'Выберите язык',
   input_form_label: 'Заполните форму ниже для продолжения 👇',
-  field_required: 'Поле обязательно для заполнения', // there is another one in customInput
+  rules_error_text: {
+    field_required: 'Поле обязательно для заполнения',
+    phone_number_valid: 'Пожалуйста, введите номер телефона в корректном формате.',
+  },
+  field_required: 'Поле обязательно для заполнения',
   submit: 'Отправить данные',
 };
 
@@ -134,15 +137,14 @@ const inputVariablesUzbek = {
     ],
   },
   education: {
-    label: "Ta'lim? Universitet nomi, fakultet?",
+    label: "Ma'lumotingiz, Ta'lim olgan Universitetingiz nomi, fakulteti?",
     type: 'text',
   },
   family_status: {
     label: 'Oilaviy holatingiz?',
     type: 'radio',
     data: [
-      { label: 'Turmush qurgan (ayol)', value: 'married_female' },
-      { label: 'Turmush qurgan (erkak)', value: 'married_male' },
+      { label: 'Turmush qurgan', value: 'married' },
       { label: 'Ajrashgan', value: 'divorced' },
       { label: 'Beva', value: 'widow' },
     ],
@@ -185,21 +187,25 @@ const inputVariablesUzbek = {
 
   choose_lang: 'Tilni tanlang',
   input_form_label: 'Davom etish uchun quyidagi formalarni to‘ldiring 👇',
-  field_required: 'Maydonni to‘ldirish majburiy', // there is another one in customInput
+  rules_error_text: {
+    field_required: 'Maydonni to‘ldirish majburiy',
+    phone_number_valid: 'Iltimos, telefon raqamingizni to‘g‘ri formatda kiriting.',
+  },
   submit: 'Ma’lumotlarni yuborish',
 };
 
 // LANGUAGUE
-const inputVariables = ref(lang.value === 'uz' ?  inputVariablesUzbek : inputVariablesRussian)
+const inputVariables = ref(lang.value === 'uz' ? inputVariablesUzbek : inputVariablesRussian);
 
 watch(lang, (newValue) => {
-  if(newValue === 'uz') {
-    inputVariables.value = inputVariablesUzbek
+  if (newValue === 'uz') {
+    inputVariables.value = inputVariablesUzbek;
+    localStorage.setItem('lang', 'uz');
   } else {
-    inputVariables.value = inputVariablesRussian
+    inputVariables.value = inputVariablesRussian;
+    localStorage.setItem('lang', 'ru');
   }
-})
-
+});
 
 const formData = reactive({
   full_name: '',
@@ -250,12 +256,14 @@ const handleSubmit = () => {
           :key="input"
           :variables="inputVariables[input]"
           v-model="formData[input]"
+          :rulesErrorText="inputVariables.rules_error_text"
         />
         <v-btn
           :loading="loading"
           class="mt-2"
           :text="inputVariables.submit"
           type="submit"
+          large
           block
         ></v-btn>
       </v-form>
