@@ -2,12 +2,12 @@
 import { mdiInformation } from '@mdi/js';
 import { ref, watch } from 'vue';
 
-const props = defineProps(['variables', 'modelValue', 'rulesErrorText',]);
+const props = defineProps(['variables', 'modelValue', 'rulesErrorText']);
 const emit = defineEmits(['update:modelValue']);
 
 const alert = ref(false);
 const inputRef = ref('');
-const selectedCheckboxes = ref(props.modelValue);
+const selectedCheckboxes = ref([]);
 
 // phoneNumber
 const formatNumber = (value) => {
@@ -76,12 +76,15 @@ watch(selectedCheckboxes, (newValue) => {
 });
 
 // rules
-const field_required = 'Поле обязательно для заполнения';
-const phone_number_valid = 'Пожалуйста, введите номер телефона в корректном формате.';
 const rules = {
-  required: (v) => !!v || field_required,
-  checkboxRequired: (v) => !!v || field_required,
-  phoneNumberMax: (v) => !(v.length < 12) || phone_number_valid,
+  required: (v) => {
+    if (Array.isArray(v) && v.length === 0) {
+      return props.rulesErrorText.field_required;
+    }
+    return !!v || props.rulesErrorText.field_required;
+  },
+  checkboxRequired: (v) => !!v || props.rulesErrorText.field_required,
+  phoneNumberMax: (v) => !(v.length < 12) || props.rulesErrorText.phone_number_valid,
 };
 
 const checkLabelLength = props.variables.label?.length > 36; // "help" key in the if for adding another text from app object
@@ -152,7 +155,6 @@ const checkIsCheckbox = props.variables.type == 'checkbox';
     :rules="[rules.required]"
     :hint="variables.example"
     persistent-hint
-    single-line
     type="text"
     maxlength="10"
     @input="onformatCalendarInput"
@@ -189,7 +191,8 @@ const checkIsCheckbox = props.variables.type == 'checkbox';
         :rules="[rules.required]"
         :label="checkbox.label"
         :value="checkbox.value"
-        hide-details
+        hide-details="auto"
+        
       ></v-checkbox>
     </v-col>
   </v-row>

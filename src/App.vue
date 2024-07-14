@@ -3,6 +3,8 @@ import { reactive, ref, watch } from 'vue';
 import CustomInput from './components/CustomInput.vue';
 
 const lang = ref('uz');
+const form = ref('');
+const loading = ref(false);
 localStorage.setItem('lang', 'uz');
 
 const inputVariablesRussian = {
@@ -195,7 +197,9 @@ const inputVariablesUzbek = {
 };
 
 // LANGUAGUE
-const inputVariables = ref(lang.value === 'uz' ? inputVariablesUzbek : inputVariablesRussian);
+const inputVariables = ref(
+  JSON.parse(JSON.stringify(lang.value === 'uz' ? inputVariablesUzbek : inputVariablesRussian)),
+);
 
 watch(lang, (newValue) => {
   if (newValue === 'uz') {
@@ -227,8 +231,15 @@ const formData = reactive({
 
 const inputNames = Object.keys(formData);
 
-const handleSubmit = () => {
-  form.value.validate();
+const handleSubmit = async () => {
+  loading.value = true;
+  const { valid } = await form.value.validate();
+  if (valid) {
+    console.log(formData);
+  } else {
+    console.log('validation error', valid);
+  }
+  loading.value = false;
 };
 </script>
 
@@ -263,7 +274,6 @@ const handleSubmit = () => {
           class="mt-2"
           :text="inputVariables.submit"
           type="submit"
-          large
           block
         ></v-btn>
       </v-form>
