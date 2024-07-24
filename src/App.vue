@@ -253,12 +253,13 @@ watch(lang, (newValue) => {
 
 // TELEGRAM
 const { initDataUnsafe, sendData } = useWebApp();
-console.log(initDataUnsafe);
 if (!initDataUnsafe.hash) {
-  alert("please use tg bot");
-  window.location.href = "https://t.me/test_hr_mini_app_bot";
+  // alert("please use tg bot");
+  // window.location.href = "https://t.me/test_hr_mini_app_bot";
   // window.close()
 }
+sendData('JSON.stringify(formData)');
+
 
 const handleSubmit = async () => {
   loading.value = true;
