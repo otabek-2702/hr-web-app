@@ -84,8 +84,14 @@ const rules = {
     return !!v || props.rulesErrorText.field_required;
   },
   checkboxRequired: (v) => !!v || props.rulesErrorText.field_required,
-  phoneNumberMax: (v) =>
-    !(v.length < 12) || props.rulesErrorText.phone_number_valid,
+  phoneNumberValid: (v) => {
+    const arr = v.split()  
+    const code = arr[0] + arr[1]
+    if (code && props.variables?.num_codes_arr.includes(code)) {
+      return !!v || props.rulesErrorText.phone_number_valid;
+    }
+    return !!(v.length >= 12) || props.rulesErrorText.phone_number_valid;
+  },
 };
 
 const checkLabelLength = props.variables.label?.length > 36; // "help" key in the if for adding another text from app object
@@ -132,7 +138,7 @@ const checkIsCheckbox = props.variables.type == "checkbox";
   <!-- NUMBER -->
   <v-text-field
     :label="variables.label"
-    :rules="[rules.required, rules.phoneNumberMax]"
+    :rules="[rules.required, rules.phoneNumberValid]"
     :hint="variables.example"
     :hide-details="!variables.example"
     persistent-hint
@@ -211,6 +217,3 @@ const checkIsCheckbox = props.variables.type == "checkbox";
 </template>
 
 <style scoped></style>
-
-<!-- :model-value="modelValue"
-  @update:model-value="$emit('update:modelValue', $event)" -->

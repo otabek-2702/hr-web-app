@@ -1,9 +1,11 @@
 <script setup>
 import { onMounted, reactive, ref, watch } from "vue";
 import CustomInput from "./components/CustomInput.vue";
-import { useWebApp } from "vue-tg";
+import { useWebApp, useWebAppTheme } from "vue-tg";
+import { useTheme } from "vuetify/lib/framework.mjs";
 
 const lang = ref("uz");
+const theme = useTheme()
 const form = ref("");
 const loading = ref(false);
 
@@ -121,6 +123,7 @@ const inputVariablesUzbek = {
     label: "Telefon raqamingiz",
     example: "77 737 27 02",
     type: "number",
+    num_codes_arr: ['90', '91', '93', '95', '99', '77', '50'],
   },
   birthday: {
     label: "Tug‘ilgan sanangiz (kun.oy.yil)",
@@ -253,12 +256,26 @@ watch(lang, (newValue) => {
 
 // TELEGRAM
 const { initDataUnsafe, sendData } = useWebApp();
+const {colorScheme} = useWebAppTheme()
+console.log()
 if (!initDataUnsafe.hash) {
   // alert("please use tg bot");
   // window.location.href = "https://t.me/test_hr_mini_app_bot";
   // window.close()
 }
 sendData('JSON.stringify(formData)');
+// theme
+if (colorScheme == 'dark') {
+  theme.global.name.value = 'customDarkTheme'
+} else{
+  theme.global.name.value = 'customLightTheme'
+}
+// lang
+if (initDataUnsafe?.user?.language_code == 'ru') {
+  lang.value = 'ru'
+} else {
+  lang.value = 'uz'
+}
 
 
 const handleSubmit = async () => {
