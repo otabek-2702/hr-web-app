@@ -259,8 +259,8 @@ const { initDataUnsafe, sendData } = useWebApp();
 const {colorScheme} = useWebAppTheme()
 console.log()
 if (!initDataUnsafe.hash) {
-  // alert("please use tg bot");
-  // window.location.href = "https://t.me/test_hr_mini_app_bot";
+  alert("please use tg bot");
+  window.location.href = "https://t.me/test_hr_mini_app_bot";
   // window.close()
 }
 sendData('JSON.stringify(formData)');
