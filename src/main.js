@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import VueTelegram from 'vue-tg'
 
 // Vuetify
 import 'vuetify/styles'
@@ -61,4 +62,4 @@ const vuetify = createVuetify({
   },
 })
 
-createApp(App).use(vuetify).mount('#app')
+createApp(App).use(vuetify).use(VueTelegram).mount('#app')

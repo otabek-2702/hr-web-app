@@ -1,12 +1,12 @@
 <script setup>
-import { mdiInformation } from '@mdi/js';
-import { ref, watch } from 'vue';
+import { mdiInformation } from "@mdi/js";
+import { ref, watch } from "vue";
 
-const props = defineProps(['variables', 'modelValue', 'rulesErrorText']);
-const emit = defineEmits(['update:modelValue']);
+const props = defineProps(["variables", "modelValue", "rulesErrorText"]);
+const emit = defineEmits(["update:modelValue"]);
 
 const alert = ref(false);
-const inputRef = ref('');
+const inputRef = ref("");
 const selectedCheckboxes = ref([]);
 
 // phoneNumber
@@ -16,12 +16,12 @@ const formatNumber = (value) => {
   if (value.length > 2) parts.push(value.slice(2, 5)); // Next 3 digits
   if (value.length > 5) parts.push(value.slice(5, 7)); // Next 2 digits
   if (value.length > 7) parts.push(value.slice(7, 9)); // Last 2 digits
-  return parts.join(' ');
+  return parts.join(" ");
 };
 
 const onPhoneNumberInput = (event) => {
   const value = event.target.value;
-  const numericValue = value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+  const numericValue = value.replace(/[^0-9]/g, ""); // Remove non-numeric characters
   if (numericValue.length > 9) {
     const numericValueSliced = numericValue.slice(0, 9);
 
@@ -33,7 +33,7 @@ const onPhoneNumberInput = (event) => {
     inputRef.value = formatNumber(numericValue);
   }
   // saving to the reactive in the app
-  emit('update:modelValue', `+998${inputRef.value.replace(/\s+/g, '')}`);
+  emit("update:modelValue", `+998${inputRef.value.replace(/\s+/g, "")}`);
 };
 // phone number end
 
@@ -43,12 +43,12 @@ const formatCalendarData = (value) => {
   if (value.length > 0) parts.push(value.slice(0, 2)); // First 2
   if (value.length > 2) parts.push(value.slice(2, 4)); // Next  2
   if (value.length > 4) parts.push(value.slice(4, 9)); // Next 4
-  return parts.join('.');
+  return parts.join(".");
 };
 
 const onformatCalendarInput = (event) => {
   const value = event.target.value;
-  const numericValue = value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+  const numericValue = value.replace(/[^0-9]/g, ""); // Remove non-numeric characters
   if (numericValue.length > 9) {
     const numericValueSliced = numericValue.slice(0, 9);
 
@@ -60,18 +60,18 @@ const onformatCalendarInput = (event) => {
     inputRef.value = formatCalendarData(numericValue);
   }
   // saving to the reactive in the app
-  emit('update:modelValue', inputRef.value.replace(/\./g, ''));
+  emit("update:modelValue", inputRef.value.replace(/\./g, ""));
 };
 // calendarData end
 
 // checkbox
 watch(selectedCheckboxes, (newValue) => {
   if (newValue.length === 0) {
-    emit('update:modelValue', '');
+    emit("update:modelValue", "");
   } else if (newValue.length === 1) {
-    emit('update:modelValue', newValue[0]);
+    emit("update:modelValue", newValue[0]);
   } else {
-    emit('update:modelValue', newValue);
+    emit("update:modelValue", newValue);
   }
 });
 
@@ -84,15 +84,16 @@ const rules = {
     return !!v || props.rulesErrorText.field_required;
   },
   checkboxRequired: (v) => !!v || props.rulesErrorText.field_required,
-  phoneNumberMax: (v) => !(v.length < 12) || props.rulesErrorText.phone_number_valid,
+  phoneNumberMax: (v) =>
+    !(v.length < 12) || props.rulesErrorText.phone_number_valid,
 };
 
 const checkLabelLength = props.variables.label?.length > 36; // "help" key in the if for adding another text from app object
-const checkIsText = props.variables.type == 'text';
-const checkIsNumber = props.variables.type == 'number';
-const checkIsCalendar = props.variables.type == 'calendar';
-const checkIsRadio = props.variables.type == 'radio';
-const checkIsCheckbox = props.variables.type == 'checkbox';
+const checkIsText = props.variables.type == "text";
+const checkIsNumber = props.variables.type == "number";
+const checkIsCalendar = props.variables.type == "calendar";
+const checkIsRadio = props.variables.type == "radio";
+const checkIsCheckbox = props.variables.type == "checkbox";
 </script>
 
 <!-- hide-details="auto" -->
@@ -102,7 +103,10 @@ const checkIsCheckbox = props.variables.type == 'checkbox';
     <h3 class="font-weight-regular text-shades-white">
       {{ `${variables.label}` }}
     </h3>
-    <h3 class="font-weight-regular text-shades-white mt-2" v-if="variables.example">
+    <h3
+      class="font-weight-regular text-shades-white mt-2"
+      v-if="variables.example"
+    >
       Пример:
       <span class="font-weight-black">{{ variables.example }}</span>
     </h3>
@@ -177,7 +181,12 @@ const checkIsCheckbox = props.variables.type == 'checkbox';
     :model-value="modelValue"
     @update:model-value="$emit('update:modelValue', $event)"
   >
-    <v-radio v-for="radio in variables.data" :label="radio.label" :value="radio.value"></v-radio>
+    <v-radio
+      v-for="radio in variables.data"
+      :key="radio.value"
+      :label="radio.label"
+      :value="radio.value"
+    ></v-radio>
   </v-radio-group>
 
   <!-- CHECKBOX -->
@@ -185,14 +194,17 @@ const checkIsCheckbox = props.variables.type == 'checkbox';
     <v-label class="ml-4" style="white-space: normal" v-if="variables.label">{{
       variables.label
     }}</v-label>
-    <v-col :cols="variables.data.length >= 2 ? 6 : 12" v-for="checkbox in variables.data">
+    <v-col
+      :cols="variables.data.length >= 2 ? 6 : 12"
+      v-for="checkbox in variables.data"
+      :key="checkbox.value"
+    >
       <v-checkbox
         v-model="selectedCheckboxes"
         :rules="[rules.required]"
         :label="checkbox.label"
         :value="checkbox.value"
         hide-details="auto"
-        
       ></v-checkbox>
     </v-col>
   </v-row>

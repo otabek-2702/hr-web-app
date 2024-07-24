@@ -8,7 +8,7 @@ export default defineConfig({
   plugins: [
     vue(),
   ],
-  base: 'hr-web-app/',
+  base: '/hr-web-app',
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))

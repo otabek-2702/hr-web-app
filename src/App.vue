@@ -1,235 +1,259 @@
 <script setup>
-import { reactive, ref, watch } from 'vue';
-import CustomInput from './components/CustomInput.vue';
+import { onMounted, reactive, ref, watch } from "vue";
+import CustomInput from "./components/CustomInput.vue";
+import { useWebApp } from "vue-tg";
 
-const lang = ref('uz');
-const form = ref('');
+const lang = ref("uz");
+const form = ref("");
 const loading = ref(false);
-localStorage.setItem('lang', 'uz');
+
+onMounted(() => {
+  localStorage.setItem("lang", "uz");
+})
 
 const inputVariablesRussian = {
   full_name: {
-    label: 'Ф.И.О',
-    type: 'text',
+    label: "Ф.И.О",
+    type: "text",
   },
   phone_number: {
-    label: 'Номер телефона',
-    example: '77 737 27 02',
-    type: 'number',
+    label: "Номер телефона",
+    example: "77 737 27 02",
+    type: "number",
   },
   birthday: {
-    label: 'Дата вашего рождения дд.мм.гггг',
+    label: "Дата вашего рождения дд.мм.гггг",
     help: true,
-    example: '27.02.2008',
-    type: 'calendar',
+    example: "27.02.2008",
+    type: "calendar",
   },
   place_of_residence: {
-    label: 'Место проживания',
-    type: 'text',
+    label: "Место проживания",
+    type: "text",
   },
   gender: {
-    label: 'Пол',
-    type: 'radio',
+    label: "Пол",
+    type: "radio",
     data: [
-      { label: 'Мужчина', value: 'man' },
-      { label: 'Женщина', value: 'woman' },
+      { label: "Мужчина", value: "man" },
+      { label: "Женщина", value: "woman" },
     ],
   },
   is_student: {
-    label: 'Являетесь ли вы студентом ?',
-    type: 'radio',
+    label: "Являетесь ли вы студентом ?",
+    type: "radio",
     data: [
-      { label: 'Да', value: 'yes' },
-      { label: 'Нет', value: 'no' },
+      { label: "Да", value: "yes" },
+      { label: "Нет", value: "no" },
     ],
   },
   education: {
-    label: 'Образование ? Наименование университета, факультет ?',
-    type: 'text',
+    label: "Образование ? Наименование университета, факультет ?",
+    type: "text",
   },
   family_status: {
-    label: 'Семейное положение ?',
-    type: 'radio',
+    label: "Семейное положение ?",
+    type: "radio",
     data: [
-      { label: 'Замужем / Женат', value: 'married' },
-      { label: 'В разводе', value: 'divorced' },
-      { label: 'Вдова', value: 'widow' },
+      { label: "Замужем / Женат", value: "married" },
+      { label: "В разводе", value: "divorced" },
+      { label: "Вдова", value: "widow" },
     ],
   },
   last_work_place: {
-    label: 'Последние места работы (распишите последние 3 места работы)',
-    type: 'text',
+    label: "Последние места работы (распишите последние 3 места работы)",
+    type: "text",
   },
   knowledge_of_languages: {
-    label: 'Знание языков ?( пожалуйста, выберите хотя бы один язык)',
+    label: "Знание языков ?( пожалуйста, выберите хотя бы один язык)",
     data: [
-      { label: 'Узбекский язык', value: 'uzbek' },
-      { label: 'Русский язык', value: 'russian' },
-      { label: 'Английский язык', value: 'english' },
+      { label: "Узбекский язык", value: "uzbek" },
+      { label: "Русский язык", value: "russian" },
+      { label: "Английский язык", value: "english" },
     ],
-    type: 'checkbox',
+    type: "checkbox",
   },
   positive_skills: {
-    label: 'Напишите свои положительные навыки',
-    type: 'text',
+    label: "Напишите свои положительные навыки",
+    type: "text",
   },
   worked_on_platforms: {
-    label: 'В каких платформах работали? \nРаспишите пожалуйста детально ',
-    example: 'exel, word, canva',
-    type: 'text',
+    label: "В каких платформах работали? \nРаспишите пожалуйста детально ",
+    example: "exel, word, canva",
+    type: "text",
   },
   worked_on_programms: {
-    label: 'В каких программах работали ?',
-    example: '1с , mysoliq, SAP',
-    type: 'text',
+    label: "В каких программах работали ?",
+    example: "1с , mysoliq, SAP",
+    type: "text",
   },
   where_find_us: {
-    label: 'Откуда узнали про наш Бот',
-    type: 'text',
+    label: "Откуда узнали про наш Бот",
+    type: "text",
   },
   agree_with_data: {
-    data: [{ label: 'Даёте ли вы разрешение на обработку личных данных', value: 'yes' }],
-    type: 'checkbox',
+    data: [
+      {
+        label: "Даёте ли вы разрешение на обработку личных данных",
+        value: "yes",
+      },
+    ],
+    type: "checkbox",
   },
 
-  choose_lang: 'Выберите язык',
-  input_form_label: 'Заполните форму ниже для продолжения 👇',
+  choose_lang: "Выберите язык",
+  input_form_label: "Заполните форму ниже для продолжения 👇",
   rules_error_text: {
-    field_required: 'Поле обязательно для заполнения',
-    phone_number_valid: 'Пожалуйста, введите номер телефона в корректном формате.',
+    field_required: "Поле обязательно для заполнения",
+    phone_number_valid:
+      "Пожалуйста, введите номер телефона в корректном формате.",
   },
-  field_required: 'Поле обязательно для заполнения',
-  submit: 'Отправить данные',
+  field_required: "Поле обязательно для заполнения",
+  submit: "Отправить данные",
 };
 
 const inputVariablesUzbek = {
   full_name: {
-    label: 'F.I.O',
-    type: 'text',
+    label: "F.I.O",
+    type: "text",
   },
   phone_number: {
-    label: 'Telefon raqamingiz',
-    example: '77 737 27 02',
-    type: 'number',
+    label: "Telefon raqamingiz",
+    example: "77 737 27 02",
+    type: "number",
   },
   birthday: {
-    label: 'Tug‘ilgan sanangiz (kun.oy.yil)',
+    label: "Tug‘ilgan sanangiz (kun.oy.yil)",
     help: true,
-    example: '27.02.2008',
-    type: 'calendar',
+    example: "27.02.2008",
+    type: "calendar",
   },
   place_of_residence: {
-    label: 'Yashash joyingiz',
-    type: 'text',
+    label: "Yashash joyingiz",
+    type: "text",
   },
   gender: {
-    label: 'Jinsingiz',
-    type: 'radio',
+    label: "Jinsingiz",
+    type: "radio",
     data: [
-      { label: 'Erkak', value: 'man' },
-      { label: 'Ayol', value: 'woman' },
+      { label: "Erkak", value: "man" },
+      { label: "Ayol", value: "woman" },
     ],
   },
   is_student: {
-    label: 'Hozirda talabamisiz?',
-    type: 'radio',
+    label: "Hozirda talabamisiz?",
+    type: "radio",
     data: [
-      { label: 'Ha', value: 'yes' },
-      { label: 'Yo‘q', value: 'no' },
+      { label: "Ha", value: "yes" },
+      { label: "Yo‘q", value: "no" },
     ],
   },
   education: {
     label: "Ma'lumotingiz, Ta'lim olgan Universitetingiz nomi, fakulteti?",
-    type: 'text',
+    type: "text",
   },
   family_status: {
-    label: 'Oilaviy holatingiz?',
-    type: 'radio',
+    label: "Oilaviy holatingiz?",
+    type: "radio",
     data: [
-      { label: 'Turmush qurgan', value: 'married' },
-      { label: 'Ajrashgan', value: 'divorced' },
-      { label: 'Beva', value: 'widow' },
+      { label: "Turmush qurgan", value: "married" },
+      { label: "Ajrashgan", value: "divorced" },
+      { label: "Beva", value: "widow" },
     ],
   },
   last_work_place: {
-    label: 'Oxirgi ish joylaringiz (oxirgi 3ta ish joyini yozing)',
-    type: 'text',
+    label: "Oxirgi ish joylaringiz (oxirgi 3ta ish joyini yozing)",
+    type: "text",
   },
   knowledge_of_languages: {
-    label: 'Til bilimingiz? (iltimos, kamida bitta tilni tanlang)',
+    label: "Til bilimingiz? (iltimos, kamida bitta tilni tanlang)",
     data: [
-      { label: 'O‘zbek tili', value: 'uzbek' },
-      { label: 'Rus tili', value: 'russian' },
-      { label: 'Ingliz tili', value: 'english' },
+      { label: "O‘zbek tili", value: "uzbek" },
+      { label: "Rus tili", value: "russian" },
+      { label: "Ingliz tili", value: "english" },
     ],
-    type: 'checkbox',
+    type: "checkbox",
   },
   positive_skills: {
-    label: 'O‘z ijobiy ko‘nikmalaringizni yozing',
-    type: 'text',
+    label: "O‘z ijobiy ko‘nikmalaringizni yozing",
+    type: "text",
   },
   worked_on_platforms: {
-    label: 'Qaysi platformalarda ishlagansiz? Iltimos, batafsil yozing',
-    example: 'exel, word, canva',
-    type: 'text',
+    label: "Qaysi platformalarda ishlagansiz? Iltimos, batafsil yozing",
+    example: "exel, word, canva",
+    type: "text",
   },
   worked_on_programms: {
-    label: 'Qaysi dasturlarda ishlagansiz?',
-    example: '1s, mysoliq, SAP',
-    type: 'text',
+    label: "Qaysi dasturlarda ishlagansiz?",
+    example: "1s, mysoliq, SAP",
+    type: "text",
   },
   where_find_us: {
-    label: 'Biz haqimizda qayerdan bildingiz?',
-    type: 'text',
+    label: "Biz haqimizda qayerdan bildingiz?",
+    type: "text",
   },
   agree_with_data: {
-    data: [{ label: "Shaxsiy ma'lumotlaringizni qayta ishlashga rozilik berasizmi", value: 'yes' }],
-    type: 'checkbox',
+    data: [
+      {
+        label: "Shaxsiy ma'lumotlaringizni qayta ishlashga rozilik berasizmi",
+        value: "yes",
+      },
+    ],
+    type: "checkbox",
   },
 
-  choose_lang: 'Tilni tanlang',
-  input_form_label: 'Davom etish uchun quyidagi formalarni to‘ldiring 👇',
+  choose_lang: "Tilni tanlang",
+  input_form_label: "Davom etish uchun quyidagi formalarni to‘ldiring 👇",
   rules_error_text: {
-    field_required: 'Maydonni to‘ldirish majburiy',
-    phone_number_valid: 'Iltimos, telefon raqamingizni to‘g‘ri formatda kiriting.',
+    field_required: "Maydonni to‘ldirish majburiy",
+    phone_number_valid:
+      "Iltimos, telefon raqamingizni to‘g‘ri formatda kiriting.",
   },
-  submit: 'Ma’lumotlarni yuborish',
+  submit: "Ma’lumotlarni yuborish",
 };
 
-// LANGUAGUE
-const inputVariables = ref(
-  JSON.parse(JSON.stringify(lang.value === 'uz' ? inputVariablesUzbek : inputVariablesRussian)),
-);
-
-watch(lang, (newValue) => {
-  if (newValue === 'uz') {
-    inputVariables.value = inputVariablesUzbek;
-    localStorage.setItem('lang', 'uz');
-  } else {
-    inputVariables.value = inputVariablesRussian;
-    localStorage.setItem('lang', 'ru');
-  }
-});
-
 const formData = reactive({
-  full_name: '',
-  phone_number: '',
-  birthday: '',
-  place_of_residence: '',
-  gender: '',
+  full_name: "",
+  phone_number: "",
+  birthday: "",
+  place_of_residence: "",
+  gender: "",
   is_student: false,
-  education: '',
-  family_status: '',
-  last_work_place: '',
+  education: "",
+  family_status: "",
+  last_work_place: "",
   knowledge_of_languages: [],
-  positive_skills: '',
-  worked_on_platforms: '',
-  worked_on_programms: '',
-  where_find_us: '',
+  positive_skills: "",
+  worked_on_platforms: "",
+  worked_on_programms: "",
+  where_find_us: "",
   agree_with_data: false,
 });
 
 const inputNames = Object.keys(formData);
+
+// LANGUAGUE
+const inputVariables = ref(
+  JSON.parse(
+    JSON.stringify(
+      lang.value === "uz" ? inputVariablesUzbek : inputVariablesRussian
+    )
+  )
+);
+
+watch(lang, (newValue) => {
+  if (newValue === "uz") {
+    inputVariables.value = inputVariablesUzbek;
+    localStorage.setItem("lang", "uz");
+  } else {
+    inputVariables.value = inputVariablesRussian;
+    localStorage.setItem("lang", "ru");
+  }
+});
+
+// TELEGRAM
+const {initDataUnsafe} = useWebApp()
+console.log(initDataUnsafe)
 
 const handleSubmit = async () => {
   loading.value = true;
@@ -237,9 +261,11 @@ const handleSubmit = async () => {
   if (valid) {
     console.log(formData);
   } else {
-    console.log('validation error', valid);
+    console.log("validation error", valid);
   }
-  loading.value = false;
+  setTimeout(() => {
+    loading.value = false;
+  }, 2000);
 };
 </script>
 
@@ -247,7 +273,9 @@ const handleSubmit = async () => {
   <v-app>
     <v-container fluid>
       <v-row class="pt-2 pb-5 px-4" align="center">
-        <p class="font-weight-medium" style="font-size: 18px">{{ inputVariables.choose_lang }}</p>
+        <p class="font-weight-medium" style="font-size: 18px">
+          {{ inputVariables.choose_lang }}
+        </p>
         <v-spacer></v-spacer>
         <v-select
           :items="[
