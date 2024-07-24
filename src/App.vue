@@ -9,7 +9,7 @@ const loading = ref(false);
 
 onMounted(() => {
   localStorage.setItem("lang", "uz");
-})
+});
 
 const inputVariablesRussian = {
   full_name: {
@@ -252,11 +252,11 @@ watch(lang, (newValue) => {
 });
 
 // TELEGRAM
-const {initDataUnsafe} = useWebApp()
-console.log(initDataUnsafe)
-if(!initDataUnsafe.hash) {
-  alert('please use tg bot')
-  window.location.href = 'https://t.me/test_hr_mini_app_bot';
+const { initDataUnsafe, sendData } = useWebApp();
+console.log(initDataUnsafe);
+if (!initDataUnsafe.hash) {
+  alert("please use tg bot");
+  window.location.href = "https://t.me/test_hr_mini_app_bot";
   // window.close()
 }
 
@@ -265,6 +265,7 @@ const handleSubmit = async () => {
   const { valid } = await form.value.validate();
   if (valid) {
     console.log(formData);
+    sendData(JSON.stringify(formData));
   } else {
     console.log("validation error", valid);
   }
