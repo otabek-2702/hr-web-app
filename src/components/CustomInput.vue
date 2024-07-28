@@ -106,11 +106,11 @@ const checkIsCheckbox = props.variables.type == "checkbox";
 <template>
   <!-- SNACKBAR -->
   <v-snackbar :timeout="3000" color="surface" multi-line v-model="alert">
-    <h3 class="font-weight-regular text-shades-white">
+    <h3 class="font-weight-regular ">
       {{ `${variables.label}` }}
     </h3>
     <h3
-      class="font-weight-regular text-shades-white mt-2"
+      class="font-weight-regular  mt-2"
       v-if="variables.example"
     >
       Пример:
