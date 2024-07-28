@@ -41,10 +41,7 @@ const customLightTheme = {
 
 
 const vuetify = createVuetify({
-  components: {
-    VDateInput,
-    ...components,
-  },
+  components,
   directives,
   theme: {
     defaultTheme: "customLightTheme",
