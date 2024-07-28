@@ -294,7 +294,7 @@ const handleSubmit = async () => {
 
 <template>
   <v-app>
-    <v-container fluid>
+    <v-container fluid class="h-screen">
       <v-row class="pt-2 pb-5 px-4" align="center">
         <p class="font-weight-medium" style="font-size: 18px">
           {{ inputVariables.choose_lang }}
