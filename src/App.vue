@@ -294,7 +294,7 @@ const handleSubmit = async () => {
 
 <template>
   <v-app>
-    <v-container fluid class="h-screen">
+    <v-container fluid  style="height: 100vh !important;">
       <v-row class="pt-2 pb-5 px-4" align="center">
         <p class="font-weight-medium" style="font-size: 18px">
           {{ inputVariables.choose_lang }}
@@ -322,7 +322,7 @@ const handleSubmit = async () => {
         />
         <v-btn
           :loading="loading"
-          class="mt-2"
+          class="py-2"
           :text="inputVariables.submit"
           type="submit"
           block
