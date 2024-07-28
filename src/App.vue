@@ -262,7 +262,7 @@ console.log()
 if (!initDataUnsafe.hash) {
   // window.close()
 }
-sendData('JSON.stringify(formData)');
+// sendData('JSON.stringify(formData)');
 // theme
 if (colorScheme == 'dark') {
   theme.global.name.value = 'customDarkTheme'
