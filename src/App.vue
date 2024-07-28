@@ -22,6 +22,7 @@ const inputVariablesRussian = {
     label: "Номер телефона",
     example: "77 737 27 02",
     type: "number",
+    num_codes_arr: ['90', '91', '93', '95', '99', '77', '50'],
   },
   birthday: {
     label: "Дата вашего рождения дд.мм.гггг",
@@ -259,8 +260,8 @@ const { initDataUnsafe, sendData } = useWebApp();
 const {colorScheme} = useWebAppTheme()
 console.log()
 if (!initDataUnsafe.hash) {
-  alert("please use tg bot");
-  window.location.href = "https://t.me/test_hr_mini_app_bot";
+  <!-- alert("please use tg bot");
+  window.location.href = "https://t.me/test_hr_mini_app_bot"; -->
   // window.close()
 }
 sendData('JSON.stringify(formData)');
