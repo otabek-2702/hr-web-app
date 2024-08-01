@@ -46,6 +46,7 @@ export const ru = {
       { label: 'Замужем / Женат', value: 'married' },
       { label: 'В разводе', value: 'divorced' },
       { label: 'Вдова', value: 'widow' },
+      { label: 'Холост / Холостячка', value: 'unmaried' },
     ],
   },
   last_work_place: {
